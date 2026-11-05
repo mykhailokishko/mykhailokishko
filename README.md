@@ -42,19 +42,6 @@ Software Engineering student ranked #1 academically at Lviv Polytechnic National
 
 ---
 
-### 💰 Wallet & Billing Core Engine
-*Go 1.22+ | PostgreSQL 16 | Apache Kafka | Redis 7 | Docker | GitLab CI* | *March 2025 – June 2026*
-- **Clean / Hexagonal Architecture:** Implemented pure dependency inversion (`Domain` ← `UseCase` ← `Adapters`) with explicit Composition Root DI in `main.go`, isolating financial invariants from infrastructure frameworks.
-- **Zero-Deadlock Concurrency:** Designed a deterministic row-level locking strategy (`min(ID1, ID2)` → `max(ID1, ID2)`) combining locking and state retrieval in a single query, reducing DB network round-trips from 5 to 2 and eliminating Deadlocks under heavy contention.
-- **Transactional Outbox Pattern:** Guaranteed At-Least-Once delivery by atomically recording balance mutations and domain events in a single PostgreSQL ACID transaction, polled via an asynchronous worker using `FOR UPDATE SKIP LOCKED`.
-- **Strict FIFO Event Streaming:** Integrated an Apache Kafka publisher routing financial mutations by `aggregate_id` (Account ID) to ensure deterministic message ordering within Kafka partitions.
-- **Idempotent Billing Guard:** Built an atomic idempotency engine (`INSERT ... ON CONFLICT DO UPDATE` with TTL locks) preventing double charges during network retries and payment gateway recovery storms.
-- **Zero-Allocation Hot Path Optimization:** Enforced 64-bit struct memory alignment (zero padding holes), achieving 54 ns/op latency and 0 allocs/op on core financial mutation methods (`Withdraw` / `Deposit`).
-- **Rigorous Verification with Testcontainers:** Authored integration stress tests spinning up real ephemeral `postgres:16-alpine` containers via `testcontainers-go`; validated zero deadlocks and 100% balance conservation across 100 concurrent cross-transfers with Race Detector (`-race`).
-- **Production Hardening & CI/CD:** Configured a minimal multi-stage Dockerfile on `scratch` (<20MB, unprivileged UID 10001) and an enterprise `.gitlab-ci.yml` pipeline covering linting, unit tests, and integration tests.
-
----
-
 ### 🛡️ Distributed Rate Limiter & Concurrency Coordinator
 *Go | Redis 7 | Lua Scripts | epoll* | *March 2026*
 - **Sliding Window Rate Limiter:** Engineered a sliding window rate limiter in Go using Redis Sorted Sets (`ZSET`) and atomic Lua scripts, eliminating the 2x burst vulnerability of Fixed Window algorithms at window boundaries.
